@@ -25,7 +25,7 @@ func main() {
 	filePaths, filePathsErr := lib.GetFilePathsFromInputFolder(inputFolder)
 
 	if filePathsErr != nil {
-		log.Fatalf("Error creating output folder: %v\n", filePathsErr)
+		log.Fatalf("Error getting file paths: %v\n", filePathsErr)
 	}
 
 	// create a unique output folder
