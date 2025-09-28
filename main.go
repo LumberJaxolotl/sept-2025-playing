@@ -2,72 +2,53 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
-	"os/exec"
 
 	"github.com/LeviathanTheGreat/ffmpeg-sept-2025-playing/lib"
 )
 
-// processVideo runs an ffmpeg command on a single input file
-func processVideo(inputPath, outputPath string) error {
-    // Build the ffmpeg command
-    // Example: scale video to 1280x720
-    cmd := exec.Command(
-        "ffmpeg",
-        "-i", inputPath,           // input file
-        "-vf", "scale=1280:720",   // video filter to resize
-        outputPath,                // output file
-    )
-
-    // Connect ffmpeg's output to the console so we can see progress/errors
-    cmd.Stdout = os.Stdout
-    cmd.Stderr = os.Stderr
-
-    // Run the command
-    return cmd.Run()
-}
 
 func main() {
-    lib.CreateDatedFolder()
+    
 	
-	// // Check if the user provided an input folder
-    // if len(os.Args) < 2 {
-    //     fmt.Println("Usage: go run main.go <input-folder>")
-    //     os.Exit(1)
-    // }
+	// Check if the user provided an input folder
+    if len(os.Args) < 2 {
+        fmt.Println("Error: Missing Command Argument")
+		fmt.Println("Usage: go run main.go <input-folder-name>")
+        os.Exit(1)
+    }
 
-    // // Get the folder path from command-line arguments
-    // inputFolder := os.Args[1]
+	// Get the folder path from command-line arguments
+    inputFolder := os.Args[1]
+	// get all file paths of videos from input folder
+	filePaths, filePathsErr := lib.GetFilePathsFromInputFolder(inputFolder)
 
-    // // Walk through the folder and process all .mp4 files
-    // err := filepath.Walk(inputFolder, func(path string, info os.FileInfo, err error) error {
-    //     if err != nil {
-    //         // Handle error while walking the folder
-    //         return err
-    //     }
+	if filePathsErr != nil {
+		log.Fatalf("Error creating output folder: %v\n", filePathsErr)
+	}
 
-    //     // Only process regular files with .mp4 extension
-    //     if !info.IsDir() && filepath.Ext(path) == ".mp4" {
-    //         // Create the output file path
-    //         outputPath := filepath.Join(filepath.Dir(path), "processed_"+info.Name())
+	// create a unique output folder
+	outputFolderPath, outputFolderErr := lib.CreateDatedFolder()
+	if outputFolderErr != nil {
+        log.Fatalf("Error creating output folder: %v\n", outputFolderErr)
+    }
 
-    //         // Print status to console
-    //         fmt.Printf("Processing %s -> %s\n", path, outputPath)
+	filesProcessed := 0
+	clipsCreated := 0
 
-    //         // Call FFmpeg on this file
-    //         if err := processVideo(path, outputPath); err != nil {
-    //             log.Printf("Failed to process %s: %v\n", path, err)
-    //         }
-    //     }
+	for _, filePath := range filePaths {
+		clipCount, creatingClipErr := lib.CreateRandomClips(filePath, 3, 0.5)
+		if creatingClipErr != nil {
+			log.Fatalf("Error creating clips from source video: %v\n", filePath)
+		}
 
-    //     // Continue walking the folder
-    //     return nil
-    // })
+		clipsCreated += clipCount 
+		filesProcessed++
+	}
 
-    // // Handle error if folder walking fails
-    // if err != nil {
-    //     log.Fatalf("Error walking folder: %v\n", err)
-    // }
-
+    
     fmt.Println("All done!")
+	fmt.Println(" ")
+	fmt.Println("Check out the new clips at: " + outputFolderPath)
 }

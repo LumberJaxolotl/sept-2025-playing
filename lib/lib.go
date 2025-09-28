@@ -2,7 +2,10 @@ package lib
 
 import (
 	"fmt"
+	"log"
+	"math/rand"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"time"
 )
@@ -34,6 +37,94 @@ func CreateDatedFolder() (string, error) {
     }
 
     return folderPath, nil
+}
+
+
+func GetFilePathsFromInputFolder(inputFolder string) ([]string, error) {
+    videoExts := []string{".mp4", ".mov", ".avi", ".mkv", ".webm", ".flv", ".wmv"}
+    var filePaths []string
+
+    err := filepath.Walk(inputFolder, func(path string, info os.FileInfo, err error) error {
+        if err != nil {
+            return err
+        }
+        if !info.IsDir() {
+            ext := filepath.Ext(path)
+            for _, vExt := range videoExts {
+                if ext == vExt {
+                    absPath, absErr := filepath.Abs(path)
+                    if absErr != nil {
+                        return absErr
+                    }
+                    filePaths = append(filePaths, absPath)
+                    break
+                }
+            }
+        }
+        return nil
+    })
+    return filePaths, err
+}
+
+// CreateRandomClips generates n random clips of given length (seconds) from a video.
+// If clipLength <= 0, it defaults to 0.5s.
+func CreateRandomClips(inputPath string, numOfClips int, clipLength float64) (int, error) {
+	rand.Seed(time.Now().UnixNano())
+
+	if clipLength <= 0 {
+		clipLength = 0.5
+	}
+
+	// Get video duration using ffprobe
+	cmd := exec.Command("ffprobe",
+		"-v", "error",
+		"-show_entries", "format=duration",
+		"-of", "default=noprint_wrappers=1:nokey=1",
+		inputPath)
+
+	output, err := cmd.Output()
+	if err != nil {
+		return 0, fmt.Errorf("failed to probe video: %w", err)
+	}
+
+	var duration float64
+	_, err = fmt.Sscanf(string(output), "%f", &duration)
+	if err != nil {
+		return 0, fmt.Errorf("failed to parse duration: %w", err)
+	}
+
+	if duration <= clipLength {
+		return 0, fmt.Errorf("video too short for %.2fs clips", clipLength)
+	}
+
+	// Prepare base name for output clips
+	base := filepath.Base(inputPath)
+	ext := filepath.Ext(base)
+	name := base[:len(base)-len(ext)]
+
+	for i := 0; i < numOfClips; i++ {
+		// Pick a random start time
+		start := rand.Float64() * (duration - clipLength)
+		outputFile := fmt.Sprintf("%s_clip_%d%s", name, i+1, ext)
+
+		clipCmd := exec.Command("ffmpeg",
+			"-y", // overwrite
+			"-ss", fmt.Sprintf("%.2f", start),
+			"-i", inputPath,
+			"-t", fmt.Sprintf("%.2f", clipLength),
+			"-c", "copy", // fast, no re-encode
+			outputFile,
+		)
+
+		if err := clipCmd.Run(); err != nil {
+			return 0, fmt.Errorf("failed to create clip %d: %w", i+1, err)
+		}
+
+		log.Printf("Created clip: %s (start=%.2fs, length=%.2fs)", outputFile, start, clipLength)
+	}
+
+
+	return numOfClips, nil
 }
 
 
