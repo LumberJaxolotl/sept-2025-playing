@@ -25,7 +25,7 @@ func main() {
 	// Get the folder path from command-line arguments
     inputFolder := os.Args[1]
 	// get all file paths of videos from input folder
-	filePaths, filePathsErr := lib.GetFilePathsFromInputFolder(inputFolder)
+	filePaths, filePathsErr := lib.GetFilePaths(inputFolder)
 
 	if filePathsErr != nil {
 		log.Fatalf("Error getting file paths: %v\n", filePathsErr)

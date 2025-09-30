@@ -50,7 +50,26 @@ func CreateDatedFolder() (string, error) {
 	return folderPath, nil
 }
 
-func GetFilePathsFromInputFolder(inputFolder string) ([]string, error) {
+func GetFilePaths(inputFolderOrFile string) ([]string, error){
+	info, err := os.Stat(inputFolderOrFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			fmt.Println("Path does not exist")
+		} else {
+			fmt.Println("Error:", err)
+		}
+	
+	}
+
+	if info.IsDir() {
+		res, err := getFilePathsFromInputFolder(inputFolderOrFile)
+		return res, err
+	} else {
+		return getFilePathsFromInputFile(inputFolderOrFile), nil
+	}
+} 
+
+func getFilePathsFromInputFolder(inputFolder string) ([]string, error) {
 	videoExts := []string{
 		"3g2",
 		"3gp",
@@ -127,6 +146,10 @@ func GetFilePathsFromInputFolder(inputFolder string) ([]string, error) {
 		return nil
 	})
 	return filePaths, err
+}
+
+func getFilePathsFromInputFile(inputFile string) []string {
+    return []string{inputFile}
 }
 
 // CreateRandomClips generates n random clips of given length (seconds) from a video.
