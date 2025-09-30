@@ -19,6 +19,9 @@ func main() {
         os.Exit(1)
     }
 
+	// writes message to console if no
+	lib.CheckFfmpegExists()
+
 	// Get the folder path from command-line arguments
     inputFolder := os.Args[1]
 	// get all file paths of videos from input folder

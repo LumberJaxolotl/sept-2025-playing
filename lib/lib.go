@@ -10,6 +10,17 @@ import (
 	"time"
 )
 
+func CheckFfmpegExists(){
+	cmd := exec.Command("ffmpeg", "-version")
+	output, err := cmd.CombinedOutput()
+
+	if err != nil {
+		fmt.Printf("ffmpeg command is NOT available or an error occurred: %v\n", err)
+		fmt.Printf("Output: %s\n", string(output))
+		return
+	}
+}
+
 func CreateDatedFolder() (string, error) {
 	baseDir := "output"
 	dateStr := time.Now().Format("2006-01-02") // YYYY-MM-DD
@@ -179,10 +190,14 @@ func CreateRandomClips(inputPath string, outputFolder string, numOfClips int, cl
 
 
 func PrintEndOfProcessMessage(outputFolderPath string){
+	
+	
+	
 	path, err := filepath.Abs(outputFolderPath)
 	if err != nil {
 		log.Printf("%v", err)
 	}
+
 
 	fmt.Println("All done!")
 	fmt.Println(" ")
