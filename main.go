@@ -38,17 +38,15 @@ func main() {
 	clipsCreated := 0
 
 	for _, filePath := range filePaths {
-		clipCount, creatingClipErr := lib.CreateRandomClips(filePath, 3, 0.5)
+		clipCount, creatingClipErr := lib.CreateRandomClips(filePath, outputFolderPath, 3, 1)
 		if creatingClipErr != nil {
-			log.Fatalf("Error creating clips from source video: %v\n", filePath)
+			log.Fatalf("Error creating clips from source video: %v\n %v", filePath, creatingClipErr)
 		}
 
 		clipsCreated += clipCount 
 		filesProcessed++
 	}
 
+    lib.PrintEndOfProcessMessage(outputFolderPath)
     
-    fmt.Println("All done!")
-	fmt.Println(" ")
-	fmt.Println("Check out the new clips at: " + outputFolderPath)
 }

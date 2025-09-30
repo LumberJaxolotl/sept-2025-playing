@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "debug",
             "program": "${workspaceFolder}/main.go",
-            "args": ["C:\\Users\\chris\\Documents\\code projects\ffmpeg video processing\\sept 2025 playing\\input\\1"] // <-- replace "input" with your actual input folder name if needed
+            "args": ["C:\\Users\\chris\\Documents\\code projects\\ffmpeg video processing\\sept 2025 playing\\input\\1"] // <-- replace "input" with your actual input folder name if needed
         }
     ]
 }
