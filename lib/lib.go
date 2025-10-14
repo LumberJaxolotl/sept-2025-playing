@@ -152,9 +152,35 @@ func getFilePathsFromInputFile(inputFile string) []string {
     return []string{inputFile}
 }
 
+// creates a folder inside named after the name in inputFilePath inside the outputFolder and returns the absolute path of the new folder 
+func CreateClipOuputFolder(inputFilePath string, outputFolder string){
+
+}
+
+// creates a folder inside named after the name in inputFilePath inside the outputFolder and returns the absolute path of the new folder 
+func CreateClipOutputFolder(inputFilePath string, outputFolder string) (string, error) {
+    base := filepath.Base(inputFilePath)
+    ext := filepath.Ext(base)
+    name := base[:len(base)-len(ext)]
+    folderPath := filepath.Join(outputFolder, name)
+
+    if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
+        return "", err
+    }
+    absPath, err := filepath.Abs(folderPath)
+    if err != nil {
+        return "", err
+    }
+    return absPath, nil
+}
+
 // CreateRandomClips generates n random clips of given length (seconds) from a video.
 // If clipLength <= 0, it defaults to 0.5s.
 func CreateRandomClips(inputPath string, outputFolder string, numOfClips int, clipLength float64) (int, error) {
+	
+	clipOutputFolder, err := CreateClipOutputFolder(inputPath, outputFolder)
+
+	
 	rand.Seed(time.Now().UnixNano())
 
 	if clipLength <= 0 {
@@ -191,7 +217,7 @@ func CreateRandomClips(inputPath string, outputFolder string, numOfClips int, cl
 	for i := 0; i < numOfClips; i++ {
 		// Pick a random start time
 		start := rand.Float64() * (duration - clipLength)
-		outputFile := fmt.Sprintf("%s\\%s_clip_%d%s", outputFolder,  name, i+1, ext)
+		outputFile := fmt.Sprintf("%s\\%s_clip_%d%s", clipOutputFolder,  name, i+1, ext)
 
 		clipCmd := exec.Command("ffmpeg",
 			"-y", // overwrite
