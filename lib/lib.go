@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -236,6 +237,36 @@ func CreateRandomClips(inputPath string, outputFolder string, numOfClips int, cl
 
 	return numOfClips, nil
 }
+// TODO this seems to be outputting deterministic/non random new orders
+// each time this runs it shoudl give a different return 
+func GetClipOrder(numOfClips int)[]int{
+	// Create a new random generator using the provided seed
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	// Create the slice [1..numOfClips]
+	newClipOrder := make([]int, numOfClips)
+	for i := 0; i < numOfClips; i++ {
+		newClipOrder[i] = i + 1
+	}
+
+	// Shuffle deterministically based on the seed
+	r.Shuffle(len(newClipOrder), func(i, j int) {
+		newClipOrder[i], newClipOrder[j] = newClipOrder[j], newClipOrder[i]
+	})
+
+	return newClipOrder
+}
+
+func ShuffleClip(inputPath string, outputFolder string, clipOrder []int, index int) (int, error) {
+	clipOutputFolder, err := CreateClipOutputFolder(inputPath, outputFolder)
+
+	prefix := strconv.Itoa(index) + "_"
+	filename := fmt.Sprintf("%d_", index)
+
+	newFileName := 
+
+}
+
 
 
 func PrintEndOfProcessMessage(outputFolderPath string){

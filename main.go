@@ -40,9 +40,25 @@ func main() {
 	filesProcessed := 0
 	clipsCreated := 0
 
+	command := "shuffle"
 	for _, filePath := range filePaths {
-		clipCount, creatingClipErr := lib.CreateRandomClips(filePath, outputFolderPath, 3, 1.2)
-		if creatingClipErr != nil {
+		
+		// TODO make for loop content its own function
+		clipCount, operationErr := 0, nil
+		if command == "clip"{
+		
+			clipCount, operationErr = lib.CreateRandomClips(filePath, outputFolderPath, 3, 1.2)
+		
+		}else if command == "shuffle" {
+
+			clipOrder := lib.GetClipOrder(filePath, outputFolderPath, len(filePaths) )
+			reorderedClip := lib.ShuffleClip(filePath, outputFolderPath, len(filePaths) )
+
+		}
+		
+		
+		
+		if operationErr != nil {
 			log.Fatalf("Error creating clips from source video: %v\n %v", filePath, creatingClipErr)
 		}
 

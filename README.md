@@ -1,4 +1,4 @@
-# Sept 2025 Playing
+# FFMPEG Clipping Util
 A little toying before I try to make a go command line too for randomly generating 5 second clips from 
 
 A tool that can 
@@ -14,6 +14,10 @@ Run the program from the command line, passing the path to your input file as an
 
 
 ## Usage
+
+```python
+clipper shuffle
+```
 
 Run the program from the command line, passing the path to your input folder or file as an argument. Wrap the path in quotes if it contains spaces:
 
