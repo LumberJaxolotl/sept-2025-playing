@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strconv"
 	"time"
 )
 
@@ -257,15 +256,15 @@ func GetClipOrder(numOfClips int)[]int{
 	return newClipOrder
 }
 
-func ShuffleClip(inputPath string, outputFolder string, clipOrder []int, index int) (int, error) {
-	clipOutputFolder, err := CreateClipOutputFolder(inputPath, outputFolder)
+// func ShuffleClip(inputPath string, outputFolder string, clipOrder []int, index int) (int, error) {
+// 	clipOutputFolder, err := CreateClipOutputFolder(inputPath, outputFolder)
 
-	prefix := strconv.Itoa(index) + "_"
-	filename := fmt.Sprintf("%d_", index)
+// 	prefix := strconv.Itoa(index) + "_"
+// 	filename := fmt.Sprintf("%d_", index)
 
-	newFileName := 
+// 	newFileName :=  
 
-}
+// }
 
 
 
